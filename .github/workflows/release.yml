@@ -1,0 +1,62 @@
+name: Release
+on:
+  push:
+    branches: [ main ]
+    tags-ignore:
+      - '*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: ${{ ! contains(github.event.head_commit.message, '[ci skip]') }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Extract data from pom.xml
+        id: pom-data
+        uses: andreacomo/maven-gav-extractor@v2
+
+      - name: Get Changelog Entry based on pom.xml version
+        id: changelog_for_pom_version
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          version: ${{ steps.pom-data.outputs.version }}
+          validation_level: error
+          validation_depth: 5
+
+      - name: check tag on version
+        uses: mukunku/tag-exists-action@v1.1.0
+        id: tag-for-pom-version
+        with:
+          tag: OpenKIM-${{ steps.pom-data.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: cancel action on tag exist
+        if: steps.tag-for-pom-version.outputs.exists == 'true'
+        run: |
+          echo "::error::Tag for version ${{ steps.pom-data.outputs.version }} already exist."
+          exit 1
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'zulu'
+
+      - name: Build with Maven
+        id: build_maven
+        run: |
+          mvn -B package -Dmaven.test.skip --file pom.xml
+
+      - name: Publish new version
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/pipeline-${{ steps.pom-data.outputs.version }}.jar
+          tag: pipeline-${{ steps.pom-data.outputs.version }}
+          overwrite: false
+          body: ${{ steps.changelog_for_pom_version.outputs.changes }}
