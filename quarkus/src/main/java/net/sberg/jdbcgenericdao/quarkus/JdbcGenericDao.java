@@ -2,6 +2,7 @@ package net.sberg.jdbcgenericdao.quarkus;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Default;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
+@Default
 @Slf4j
 public class JdbcGenericDao {
 
