@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>core</artifactId>
+    <name>JdbcGenericDao :: Core</name>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
