@@ -3,11 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.sberg</groupId>
     <artifactId>JdbcGenericDao</artifactId>
-    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>JdbcGenericDao</name>
+
+    <version>1.0.0</version>
+
     <modules>
-        <module>JdbcGenericDaoCore</module>
-        <module>JdbcGenericDaoQuarkus</module>
+        <module>core</module>
+        <module>quarkus</module>
     </modules>
 </project>
