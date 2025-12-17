@@ -96,7 +96,7 @@ public class DaoDescriptorHelper {
         DaoDescriptorProperty daoDescriptorProperty;
 
         for (String annotatedClass : annotatedClasses) {
-            Class<?> aClass = Class.forName(annotatedClass);
+            Class<?> aClass = Class.forName(annotatedClass, false, Thread.currentThread().getContextClassLoader());
 
             daoDescriptorBean = new DaoDescriptorBean();
             daoDescriptorBean.setTransientBean(aClass.getAnnotation(DaoDescriptorClass.class).transientBean());
@@ -162,7 +162,7 @@ public class DaoDescriptorHelper {
                         String name = entry.getName();
                         if (name.startsWith(path) && name.endsWith(".class") && !entry.isDirectory()) {
                             String className = name.replace('/', '.').substring(0, name.length() - 6);
-                            Class<?> cls = Class.forName(className);
+                            Class<?> cls = Class.forName(className, false, Thread.currentThread().getContextClassLoader());
                             if (cls.getAnnotation((Class) DaoDescriptorClass.class) != null) {
                                 classes.add(cls);
                             }
@@ -183,7 +183,7 @@ public class DaoDescriptorHelper {
                 scanDirectory(basePackage + "." + file.getName(), file, out, annotationClass);
             } else if (file.getName().endsWith(".class")) {
                 String className = basePackage + '.' + file.getName().substring(0, file.getName().length() - 6);
-                Class<?> cls = Class.forName(className);
+                Class<?> cls = Class.forName(className, false, Thread.currentThread().getContextClassLoader());
                 if (cls.getAnnotation((Class) annotationClass) != null) {
                     out.add(cls);
                 }
