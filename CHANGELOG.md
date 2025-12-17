@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [1.1.0]
+
+### Changed
+* reduce quarkus impl and native to core modul
+
+### Fixed
+* wrong class loader on scan package to find annotation
+
 ## [1.0.0]
 
 ### Added
