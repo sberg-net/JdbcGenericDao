@@ -56,7 +56,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/pipeline-${{ steps.pom-data.outputs.version }}.jar
-          tag: pipeline-${{ steps.pom-data.outputs.version }}
+          file: core/target/core-${{ steps.pom-data.outputs.version }}.jar
+          tag: JdbcGenericDao-${{ steps.pom-data.outputs.version }}
           overwrite: false
           body: ${{ steps.changelog_for_pom_version.outputs.changes }}
