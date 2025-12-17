@@ -1,10 +1,10 @@
 package net.sberg.jdbcgenericdao.quarkus;
 
+
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import net.sberg.jdbcgenericdao.core.DaoPlaceholderProperty;
 import net.sberg.jdbcgenericdao.core.DaoProjectionBean;
 import net.sberg.jdbcgenericdao.core.JdbcGenericDaoNativeJava;
@@ -15,7 +15,6 @@ import javax.sql.DataSource;
 import java.util.List;
 
 @ApplicationScoped
-@Slf4j
 public class JdbcGenericDao {
 
     @ConfigProperty(name = "jdbcGenericDao.scanPackage")
