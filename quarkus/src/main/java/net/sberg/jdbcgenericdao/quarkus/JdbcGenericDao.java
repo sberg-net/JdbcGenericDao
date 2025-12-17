@@ -7,7 +7,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import net.sberg.jdbcgenericdao.core.DaoPlaceholderProperty;
 import net.sberg.jdbcgenericdao.core.DaoProjectionBean;
-import net.sberg.jdbcgenericdao.core.GenericJdbcDao;
+import net.sberg.jdbcgenericdao.core.JdbcGenericDaoNativeJava;
 import net.sberg.jdbcgenericdao.core.DaoDescriptorBean;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -24,65 +24,65 @@ public class JdbcGenericDao {
     @Inject
     DataSource dataSource;
 
-    private GenericJdbcDao delegate;
+    private JdbcGenericDaoNativeJava jdbcGenericDaoNativeJava;
 
     @PostConstruct
     public void init() throws Exception {
-        delegate = new GenericJdbcDao(dataSource);
-        delegate.init(scanPackage);
+        jdbcGenericDaoNativeJava = new JdbcGenericDaoNativeJava(dataSource);
+        jdbcGenericDaoNativeJava.init(scanPackage);
     }
 
     public Object selectOne(String entityName, DaoProjectionBean daoProjectionBean, List<DaoPlaceholderProperty> placeholders) throws Exception {
-        return delegate.selectOne(entityName, daoProjectionBean, placeholders);
+        return jdbcGenericDaoNativeJava.selectOne(entityName, daoProjectionBean, placeholders);
     }
 
     public Object selectOne(String sql, String entityName, DaoProjectionBean daoProjectionBean, List<DaoPlaceholderProperty> placeholders) throws Exception {
-        return delegate.selectOne(sql, entityName, daoProjectionBean, placeholders);
+        return jdbcGenericDaoNativeJava.selectOne(sql, entityName, daoProjectionBean, placeholders);
     }
 
     public List selectMany(String entityName, DaoProjectionBean daoProjectionBean, List<DaoPlaceholderProperty> placeholders) throws Exception {
-        return delegate.selectMany(entityName, daoProjectionBean, placeholders);
+        return jdbcGenericDaoNativeJava.selectMany(entityName, daoProjectionBean, placeholders);
     }
 
     public List selectMany(String sql, String entityName, DaoProjectionBean daoProjectionBean, List<DaoPlaceholderProperty> placeholders) throws Exception {
-        return delegate.selectMany(sql, entityName, daoProjectionBean, placeholders);
+        return jdbcGenericDaoNativeJava.selectMany(sql, entityName, daoProjectionBean, placeholders);
     }
 
     @Transactional
     public Object insert(Object entity) throws Exception {
-        return delegate.insert(entity);
+        return jdbcGenericDaoNativeJava.insert(entity);
     }
 
     public int getNextId(String entityName) throws Exception {
-        return delegate.getNextId(entityName);
+        return jdbcGenericDaoNativeJava.getNextId(entityName);
     }
 
     @Transactional
     public void delete(Object entity) throws Exception {
-        delegate.delete(entity);
+        jdbcGenericDaoNativeJava.delete(entity);
     }
 
     private void delete(int id, DaoDescriptorBean daoDescriptorBean) throws Exception {
-        delegate.delete(id, daoDescriptorBean);
+        jdbcGenericDaoNativeJava.delete(id, daoDescriptorBean);
     }
 
     @Transactional
     public void delete(int id, String entityName) throws Exception {
-        delegate.delete(id, entityName);
+        jdbcGenericDaoNativeJava.delete(id, entityName);
     }
 
     @Transactional
     public void delete(String sql, List<DaoPlaceholderProperty> placeholders) throws Exception {
-        delegate.delete(sql, placeholders);
+        jdbcGenericDaoNativeJava.delete(sql, placeholders);
     }
 
     @Transactional
     public Object update(Object entity) throws Exception {
-        return delegate.update(entity);
+        return jdbcGenericDaoNativeJava.update(entity);
     }
 
     @Transactional
     public int update(String sql, String entityName, List<DaoPlaceholderProperty> placeholders) throws Exception {
-        return delegate.update(sql, entityName, placeholders);
+        return jdbcGenericDaoNativeJava.update(sql, entityName, placeholders);
     }
 }

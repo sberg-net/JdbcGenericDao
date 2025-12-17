@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class GenericJdbcDao {
+public class JdbcGenericDaoNativeJava {
 
     private final DataSource dataSource;
 
-    public GenericJdbcDao(DataSource dataSource) {
+    public JdbcGenericDaoNativeJava(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
