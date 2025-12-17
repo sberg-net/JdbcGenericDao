@@ -58,6 +58,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.pom-data.outputs.version }}
-          release_name: JdbcGenericDao {{ steps.pom-data.outputs.version }}
-          draft: false
-          prerelease: false
+          release_name: JdbcGenericDao ${{ steps.pom-data.outputs.version }}
+          prerelease: true
