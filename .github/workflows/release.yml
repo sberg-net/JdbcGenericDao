@@ -53,11 +53,11 @@ jobs:
           mvn -B package -Dmaven.test.skip --file pom.xml
 
       - name: Publish new release
-        uses: comnoco/create-release@v2
+        uses: comnoco/create-release-action@v2.0.5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: {{ steps.pom-data.outputs.version }}
+          tag_name: ${{ steps.pom-data.outputs.version }}
           release_name: JdbcGenericDao {{ steps.pom-data.outputs.version }}
           draft: false
           prerelease: false
