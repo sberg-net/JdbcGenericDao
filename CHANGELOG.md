@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [1.2.1]
+
+### Fixed
+* pom var not working with jitpack
+* set body on github workflow
+
 ## [1.2.0]
 
 ### Changed

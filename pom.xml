@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <name>JdbcGenericDao</name>
 
-    <version>1.2.0</version>
+    <version>1.2.1</version>
 
     <properties>
         <genericdao.groupId>net.sberg.jdbcgenericdao</genericdao.groupId>
