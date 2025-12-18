@@ -60,6 +60,6 @@ jobs:
         with:
           tag_name: ${{ steps.pom-data.outputs.version }}
           release_name: JdbcGenericDao ${{ steps.pom-data.outputs.version }}
-          body_path: ${{ steps.changelog_for_pom_version.outputs.changes }}
+          body: ${{ steps.changelog_for_pom_version.outputs.changes }}
           prerelease: false
           draft: false
