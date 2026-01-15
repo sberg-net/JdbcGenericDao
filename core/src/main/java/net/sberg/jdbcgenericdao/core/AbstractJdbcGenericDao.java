@@ -1,13 +1,6 @@
 package net.sberg.jdbcgenericdao.core;
 
-import net.sberg.jdbcgenericdao.core.DaoDescriptorBean;
-import net.sberg.jdbcgenericdao.core.DaoDescriptorProperty;
-import net.sberg.jdbcgenericdao.core.DaoPlaceholderProperty;
-import net.sberg.jdbcgenericdao.core.DaoProjectionBean;
-import net.sberg.jdbcgenericdao.core.v2.DaoDescriptorHelper;
 import org.apache.commons.beanutils.PropertyUtils;
-
-import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.*;
@@ -20,12 +13,12 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractJdbcGenericDao {
 
-    protected final net.sberg.jdbcgenericdao.core.v2.DaoDescriptorHelper daoDescriptorHelper = new DaoDescriptorHelper();
-    protected Map<String, DaoDescriptorBean> descrMap;
-    protected Map<String, Object> mutexMap;
-    protected Map<String, Integer> idMap;
+    private final DaoDescriptorHelper daoDescriptorHelper = new DaoDescriptorHelper();
+    private Map<String, DaoDescriptorBean> descrMap;
+    private Map<String, Object> mutexMap;
+    private Map<String, Integer> idMap;
 
-    protected static final String PROP_IGNORE = "_ignore_";
+    private static final String PROP_IGNORE = "_ignore_";
 
     protected void init(String scanPackage) throws Exception {
         descrMap = daoDescriptorHelper.createBeanMap(scanPackage);
@@ -42,7 +35,7 @@ public abstract class AbstractJdbcGenericDao {
         }
     }
 
-    protected void fillPreparedStatement(PreparedStatement ps, DaoDescriptorBean daoDescriptorBean, List dbProperties, Object entity, List<DaoPlaceholderProperty> placeholders) throws Exception {
+    private void fillPreparedStatement(PreparedStatement ps, DaoDescriptorBean daoDescriptorBean, List dbProperties, Object entity, List<DaoPlaceholderProperty> placeholders) throws Exception {
         Object value;
         int sqlType;
         if (placeholders != null && !placeholders.isEmpty()) {

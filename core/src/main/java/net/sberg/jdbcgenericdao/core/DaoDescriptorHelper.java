@@ -1,7 +1,6 @@
 package net.sberg.jdbcgenericdao.core;
 
 import org.apache.commons.lang3.ClassUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -28,24 +27,24 @@ public class DaoDescriptorHelper {
     private final List<String> annotatedClasses = new ArrayList<>();
     private final Map<String, List<String>> annotatedElements = new HashMap<>();
 
-    public String createInsertStatement(DaoDescriptorBean daoDescriptorBean) {
+    public String createInsertStatement(DaoDescriptorBean daoDescriptorBean, Optional<String> tableName) throws Exception {
         String projection = daoDescriptorBean.getAllDbProperties().stream().map(String::valueOf).collect(Collectors.joining(", "));
         String placeholders = daoDescriptorBean.getAllDbProperties().stream().map(o -> "?").collect(Collectors.joining(", "));
-        return MessageFormat.format(insertTemplate, daoDescriptorBean.getDbTable(), projection, placeholders);
+        return MessageFormat.format(insertTemplate, tableName.isEmpty()?daoDescriptorBean.getDbTable():tableName.get(), projection, placeholders);
     }
 
-    public String createUpdateStatement(DaoDescriptorBean daoDescriptorBean) {
+    public String createUpdateStatement(DaoDescriptorBean daoDescriptorBean, Optional<String> tableName) throws Exception {
         List<String> dbProperties = new ArrayList<>(daoDescriptorBean.getAllDbProperties());
         dbProperties.remove(daoDescriptorBean.getPrimaryKey());
         String placeholders = dbProperties.stream().map(o -> o + " = ?").collect(Collectors.joining(", "));
-        return MessageFormat.format(updateTemplate, daoDescriptorBean.getDbTable(), placeholders, MessageFormat.format(placeHolderTemplate, daoDescriptorBean.getPrimaryKey()));
+        return MessageFormat.format(updateTemplate, tableName.isEmpty()?daoDescriptorBean.getDbTable():tableName.get(), placeholders, MessageFormat.format(placeHolderTemplate, daoDescriptorBean.getPrimaryKey()));
     }
 
-    public String createSelectMaxIdStatement(DaoDescriptorBean daoDescriptorBean) {
-        return MessageFormat.format(selectMaxIdTemplate, daoDescriptorBean.getPrimaryKey(), daoDescriptorBean.getDbTable());
+    public String createSelectMaxIdStatement(DaoDescriptorBean daoDescriptorBean, Optional<String> tableName) throws Exception {
+        return MessageFormat.format(selectMaxIdTemplate, daoDescriptorBean.getPrimaryKey(), tableName.isEmpty()?daoDescriptorBean.getDbTable():tableName.get());
     }
 
-    public String createSelectSimpleStatement(DaoProjectionBean daoProjectionBean, DaoDescriptorBean daoDescriptorBean, List<DaoPlaceholderProperty> placeholders) {
+    public String createSelectSimpleStatement(DaoProjectionBean daoProjectionBean, DaoDescriptorBean daoDescriptorBean, List<DaoPlaceholderProperty> placeholders) throws Exception {
         StringBuilder params = new StringBuilder("1=1");
         if (placeholders != null && !placeholders.isEmpty()) {
             params = new StringBuilder();
@@ -54,13 +53,13 @@ public class DaoDescriptorHelper {
             for (DaoPlaceholderProperty placeholder : placeholders) {
                 daoPlaceholderProperty = placeholder;
                 daoDescriptorProperty = daoDescriptorBean.getProperties().get(daoPlaceholderProperty.getProperty());
-                if (!params.isEmpty()) {
+                if (params.length() > 0) {
                     params.append(" and ");
                 }
                 params.append(MessageFormat.format(placeHolderTemplate, daoDescriptorProperty.getDbProperty()));
             }
         }
-        String projection;
+        String projection = "";
         if (daoProjectionBean == null) {
             projection = daoDescriptorBean.getAllDbProperties().stream().map(String::valueOf).collect(Collectors.joining(", "));
         } else {
@@ -70,8 +69,8 @@ public class DaoDescriptorHelper {
         return MessageFormat.format(selectSimpleTemplate, projection, daoDescriptorBean.getDbTable(), params.toString());
     }
 
-    public String createDeleteStatement(DaoDescriptorBean daoDescriptorBean) {
-        return MessageFormat.format(deleteTemplate, daoDescriptorBean.getDbTable(), MessageFormat.format(placeHolderTemplate, daoDescriptorBean.getPrimaryKey()));
+    public String createDeleteStatement(DaoDescriptorBean daoDescriptorBean, Optional<String> tableName) throws Exception {
+        return MessageFormat.format(deleteTemplate, tableName.isEmpty()?daoDescriptorBean.getDbTable():tableName.get(), MessageFormat.format(placeHolderTemplate, daoDescriptorBean.getPrimaryKey()));
     }
 
     public Map<String, DaoDescriptorBean> createBeanMap(String scanPackage) throws Exception {
@@ -144,7 +143,7 @@ public class DaoDescriptorHelper {
         String path = basePackage.replace('.', '/');
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader == null) {
-            classLoader = DaoDescriptorHelper.class.getClassLoader();
+            classLoader = net.sberg.jdbcgenericdao.core.DaoDescriptorHelper.class.getClassLoader();
         }
         Enumeration<URL> resources = classLoader.getResources(path);
         while (resources.hasMoreElements()) {

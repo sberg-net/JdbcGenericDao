@@ -43,6 +43,12 @@ class JdbcGenericDaoSelectTest {
     }
 
     @Test
+    void delete_bySql() throws Exception {
+        List<DaoPlaceholderProperty> placeholders = List.of(new DaoPlaceholderProperty("lastName", "Doe"));
+        jdbcGenericDao.delete("DELETE FROM PERSON WHERE LAST_NAME = ?", placeholders);
+    }
+
+    @Test
     void selectMany_byLastName_returnsEntities() throws Exception {
         List<DaoPlaceholderProperty> where = List.of(new DaoPlaceholderProperty("lastName", "Doe"));
         @SuppressWarnings("rawtypes")
