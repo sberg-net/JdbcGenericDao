@@ -8,11 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-* junit5 test for quarkus impl. for jdbc select
 
 ### Changed
 
 ### Fixed
+
+## [1.3.0]
+
+### Added
+* junit5 test for quarkus impl. for jdbc select
+
+### changed
+* migration bean concept
 
 ## [1.2.1]
 
