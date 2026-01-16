@@ -61,6 +61,7 @@ public class JdbcGenericDao extends AbstractJdbcGenericDao {
             try (PreparedStatement ps = con.prepareStatement(sql)) {
                 for (int i = 0; i < filler.getBatchSize(); i++) {
                     filler.setValues(ps, i);
+                    ps.addBatch();
                 }
                 return ps.executeBatch();
             }

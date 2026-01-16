@@ -1,0 +1,120 @@
+package net.sberg.jdbcgenericdao.quarkustest;
+
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import net.sberg.jdbcgenericdao.core.DaoPlaceholderProperty;
+import net.sberg.jdbcgenericdao.quarkustest.testentity.Person;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@QuarkusTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class JdbcGenericDaoTest {
+
+    @Inject
+    DataSource dataSource;
+
+    @Inject
+    JdbcGenericDao jdbcGenericDao;
+
+    @BeforeAll
+    void setupSchema() throws Exception {
+        try (Connection c = dataSource.getConnection(); Statement st = c.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS PERSON");
+            st.execute("CREATE TABLE PERSON (ID INT PRIMARY KEY, FIRST_NAME VARCHAR(64), LAST_NAME VARCHAR(64))");
+            for (String s : Arrays.asList(
+                    "INSERT INTO PERSON (ID, FIRST_NAME, LAST_NAME) VALUES (1, 'John', 'Doe')",
+                    "INSERT INTO PERSON (ID, FIRST_NAME, LAST_NAME) VALUES (2, 'Jane', 'Doe')",
+                    "INSERT INTO PERSON (ID, FIRST_NAME, LAST_NAME) VALUES (3, 'Bob', 'Smith')")) {
+                st.execute(s);
+            }
+        }
+    }
+
+    @Test
+    void delete_bySql() throws Exception {
+        List<DaoPlaceholderProperty> placeholders = List.of(new DaoPlaceholderProperty("lastName", "Smith"));
+        jdbcGenericDao.delete("DELETE FROM PERSON WHERE LAST_NAME = ?", placeholders);
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        assertNull(person);
+        person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 2)));
+        assertNotNull(person);
+    }
+
+    @Test
+    void delete_byObject() throws Exception {
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        assertNotNull(person);
+        jdbcGenericDao.delete(person, Optional.empty());
+        person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        assertNull(person);
+    }
+
+    @Test
+    void delete_byId() throws Exception {
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        assertNotNull(person);
+        jdbcGenericDao.delete(person.getId(), Person.class.getName(), Optional.empty());
+        person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        assertNull(person);
+    }
+
+    @Test
+    void batchInsert() throws Exception {
+        List persons = new ArrayList<>();
+        Person p = new Person();
+        p.setFirstName("Christian");
+        p.setLastName("Dethloff");
+        persons.add(p);
+
+        p = new Person();
+        p.setFirstName("Marlen");
+        p.setLastName("Dethloff");
+        persons.add(p);
+
+        jdbcGenericDao.batchInsert(persons, Optional.empty());
+
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 4)));
+        assertNotNull(person);
+    }
+
+    @Test
+    void batchUpdate() throws Exception {
+        List persons = new ArrayList<>();
+
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        person.setFirstName("uschi");
+        persons.add(person);
+
+        person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 2)));
+        person.setFirstName("uschi");
+        persons.add(person);
+
+        Person p = new Person();
+        p.setFirstName("Christian");
+        p.setLastName("Dethloff");
+        persons.add(p);
+
+        p = new Person();
+        p.setFirstName("Marlen");
+        p.setLastName("Dethloff");
+        persons.add(p);
+
+        jdbcGenericDao.batchUpdate(persons, Optional.empty());
+
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 4)));
+        assertNotNull(person);
+    }
+}

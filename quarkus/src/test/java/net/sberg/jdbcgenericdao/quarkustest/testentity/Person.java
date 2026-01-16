@@ -1,4 +1,4 @@
-package net.sberg.jdbcgenericdao.quarkus.testentity;
+package net.sberg.jdbcgenericdao.quarkustest.testentity;
 
 import lombok.Data;
 import net.sberg.jdbcgenericdao.core.DaoDescriptorClass;
