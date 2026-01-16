@@ -123,7 +123,7 @@ public abstract class AbstractJdbcGenericDao {
 
         String idProperty = daoDescriptorBean.getDbPropertyMapping().get(daoDescriptorBean.getPrimaryKey());
         Integer id = (Integer) PropertyUtils.getProperty(entity, idProperty);
-        if (id <= 0) {
+        if (id == null || id <= 0) {
             id = getNextId(daoDescriptorBean, tableName);
             PropertyUtils.setProperty(entity, idProperty, id);
         }
@@ -141,7 +141,7 @@ public abstract class AbstractJdbcGenericDao {
         for (Iterator<Object> iterator = entities.iterator(); iterator.hasNext(); ) {
             Object entity = iterator.next();
             Integer id = (Integer) PropertyUtils.getProperty(entity, idProperty);
-            if (id <= 0) {
+            if (id == null || id <= 0) {
                 id = getNextId(daoDescriptorBean, tableName);
                 PropertyUtils.setProperty(entity, idProperty, id);
             }
@@ -150,7 +150,7 @@ public abstract class AbstractJdbcGenericDao {
         batchManipulate(insert, new InsertBatchPreparedStatementSetter(daoDescriptorBean, entities));
     }
 
-    protected int getMaxId(DaoDescriptorBean daoDescriptorBean, Optional<String> tableName) throws Exception {
+    private int getMaxId(DaoDescriptorBean daoDescriptorBean, Optional<String> tableName) throws Exception {
         String selectMaxId = daoDescriptorHelper.createSelectMaxIdStatement(daoDescriptorBean, tableName);
         Integer id = queryForObject(selectMaxId, rs -> rs.next()?rs.getInt(1):null);
         if (id == null) {
@@ -159,7 +159,7 @@ public abstract class AbstractJdbcGenericDao {
         return id;
     }
 
-    public int getNextId(DaoDescriptorBean daoDescriptorBean, Optional<String> tableName) throws Exception {
+    private int getNextId(DaoDescriptorBean daoDescriptorBean, Optional<String> tableName) throws Exception {
 
         if (!tableName.isEmpty()) {
             synchronized (Integer.valueOf(tableName.get().hashCode())) {

@@ -1,5 +1,5 @@
 <archetype>
-  <id>net.sberg.jdbcgenericdao.quarkus.JdbcGenericDao</id>
+  <id>net.sberg.jdbcgenericdao.quarkustest.JdbcGenericDao</id>
   <sources>
     <source>src/main/java/App.java</source>
   </sources>
