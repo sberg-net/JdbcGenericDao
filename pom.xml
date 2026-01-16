@@ -17,5 +17,6 @@
     <modules>
         <module>core</module>
         <module>quarkus</module>
+        <module>springboot</module>
     </modules>
 </project>
