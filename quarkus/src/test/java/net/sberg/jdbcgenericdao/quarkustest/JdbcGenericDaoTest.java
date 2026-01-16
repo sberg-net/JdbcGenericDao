@@ -42,6 +42,7 @@ class JdbcGenericDaoTest {
                 st.execute(s);
             }
         }
+        jdbcGenericDao.initialize();
     }
 
     @Test
