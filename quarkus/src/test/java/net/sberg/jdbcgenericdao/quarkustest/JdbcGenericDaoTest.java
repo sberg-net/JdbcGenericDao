@@ -142,4 +142,28 @@ class JdbcGenericDaoTest {
         Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 4)));
         assertNotNull(person);
     }
+
+    @Test
+    void selectMany_byEntityName() throws Exception {
+        List persons = jdbcGenericDao.selectMany(Person.class.getName(),null,null);
+        assertEquals(3, persons.size());
+    }
+
+    @Test
+    void selectMany_bySql() throws Exception {
+        List persons = jdbcGenericDao.selectMany("select * from Person", Person.class.getName(), null,null);
+        assertEquals(3, persons.size());
+    }
+
+    @Test
+    void selectOne_byEntityName() throws Exception {
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 1)));
+        assertNotNull(person);
+    }
+
+    @Test
+    void selectOne_bySql() throws Exception {
+        Person person = (Person)jdbcGenericDao.selectOne("select * from Person where id = ?", Person.class.getName(), null,List.of(new DaoPlaceholderProperty("id", 1)));
+        assertNotNull(person);
+    }
 }
