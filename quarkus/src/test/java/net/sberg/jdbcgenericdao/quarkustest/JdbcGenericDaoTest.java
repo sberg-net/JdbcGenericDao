@@ -14,7 +14,7 @@ import jakarta.inject.Inject;
 import net.sberg.jdbcgenericdao.core.DaoPlaceholderProperty;
 import net.sberg.jdbcgenericdao.quarkus.JdbcGenericDao;
 import net.sberg.jdbcgenericdao.quarkustest.testentity.Person;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -30,7 +30,7 @@ class JdbcGenericDaoTest {
     @Inject
     JdbcGenericDao jdbcGenericDao;
 
-    @BeforeAll
+    @BeforeEach
     void setupSchema() throws Exception {
         try (Connection c = dataSource.getConnection(); Statement st = c.createStatement()) {
             st.execute("DROP TABLE IF EXISTS PERSON");
@@ -86,6 +86,8 @@ class JdbcGenericDaoTest {
         persons.add(p);
 
         jdbcGenericDao.batchInsert(persons, Optional.empty());
+
+        List<Person> personsTest = jdbcGenericDao.selectMany(Person.class.getName(), null,null);
 
         Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 4)));
         assertNotNull(person);

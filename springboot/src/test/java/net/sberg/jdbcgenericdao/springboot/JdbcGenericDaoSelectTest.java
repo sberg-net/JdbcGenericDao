@@ -4,6 +4,7 @@ import net.sberg.jdbcgenericdao.core.DaoPlaceholderProperty;
 import net.sberg.jdbcgenericdao.core.DaoProjectionBean;
 import net.sberg.jdbcgenericdao.springboot.testentity.Person;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +27,7 @@ class JdbcGenericDaoSelectTest {
     @Autowired
     private JdbcGenericDao jdbcGenericDao;
 
-    @BeforeAll
+    @BeforeEach
     void setupSchema() throws Exception {
         try (Connection c = dataSource.getConnection(); Statement st = c.createStatement()) {
             st.execute("DROP TABLE IF EXISTS PERSON");
@@ -40,39 +39,131 @@ class JdbcGenericDaoSelectTest {
                 st.execute(s);
             }
         }
+        jdbcGenericDao.initialize();
     }
 
     @Test
-    void selectMany_byLastName_returnsEntities() throws Exception {
-        List<DaoPlaceholderProperty> where = Collections.singletonList(new DaoPlaceholderProperty("lastName", "Doe"));
-        @SuppressWarnings("rawtypes")
-        List result = jdbcGenericDao.selectMany(Person.class.getName(), null, where);
-        assertNotNull(result);
-        assertEquals(2, result.size());
-
-        Object first = result.get(0);
-        assertInstanceOf(Person.class, first);
-        Person p = (Person) first;
-        assertEquals("Doe", p.getLastName());
+    void delete_bySql() throws Exception {
+        List<DaoPlaceholderProperty> placeholders = List.of(new DaoPlaceholderProperty("lastName", "Smith"));
+        jdbcGenericDao.delete("DELETE FROM PERSON WHERE LAST_NAME = ?", placeholders);
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        assertNull(person);
+        person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 2)));
+        assertNotNull(person);
     }
 
     @Test
-    void selectOne_byId_returnsEntity() throws Exception {
-        List<DaoPlaceholderProperty> where = Collections.singletonList(new DaoPlaceholderProperty("id", 1));
-        Object result = jdbcGenericDao.selectOne(Person.class.getName(), null, where);
-        assertNotNull(result);
-        assertInstanceOf(Person.class, result);
-        Person p = (Person) result;
-        assertEquals(1, p.getId());
-        assertEquals("John", p.getFirstName());
+    void delete_byObject() throws Exception {
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        assertNotNull(person);
+        jdbcGenericDao.delete(person, Optional.empty());
+        person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        assertNull(person);
     }
 
     @Test
-    void selectOne_atomProjection_returnsScalar() throws Exception {
-        List<DaoPlaceholderProperty> where = Collections.singletonList(new DaoPlaceholderProperty("id", 2));
-        DaoProjectionBean projection = new DaoProjectionBean(Collections.singletonList("firstName"), String.class, true);
-        Object value = jdbcGenericDao.selectOne(Person.class.getName(), projection, where);
-        assertInstanceOf(String.class, value);
-        assertEquals("Jane", value);
+    void delete_byId() throws Exception {
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        assertNotNull(person);
+        jdbcGenericDao.delete(person.getId(), Person.class.getName(), Optional.empty());
+        person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        assertNull(person);
+    }
+
+    @Test
+    void batchInsert() throws Exception {
+        List persons = new ArrayList<>();
+        Person p = new Person();
+        p.setFirstName("Christian");
+        p.setLastName("Dethloff");
+        persons.add(p);
+
+        p = new Person();
+        p.setFirstName("Marlen");
+        p.setLastName("Dethloff");
+        persons.add(p);
+
+        jdbcGenericDao.batchInsert(persons, Optional.empty());
+
+        List<Person> personsTest = jdbcGenericDao.selectMany(Person.class.getName(), null,null);
+
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 4)));
+        assertNotNull(person);
+    }
+
+    @Test
+    void batchUpdate() throws Exception {
+        List persons = new ArrayList<>();
+
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        person.setFirstName("uschi");
+        persons.add(person);
+
+        person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 2)));
+        person.setFirstName("uschi");
+        persons.add(person);
+
+        jdbcGenericDao.batchUpdate(persons, Optional.empty());
+
+        person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        assertEquals("uschi", person.getFirstName());
+
+        person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 2)));
+        assertEquals("uschi", person.getFirstName());
+    }
+
+    @Test
+    void update_byObject() throws Exception {
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        person.setFirstName("uschi");
+
+        jdbcGenericDao.update(person, Optional.empty());
+
+        person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        assertEquals("uschi", person.getFirstName());
+    }
+
+    @Test
+    void update_bySql() throws Exception {
+        jdbcGenericDao.update("update Person set FIRST_NAME='uschi' where id = ?", Person.class.getName(), List.of(new DaoPlaceholderProperty("id", 3)));
+
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 3)));
+        assertEquals("uschi", person.getFirstName());
+    }
+
+    @Test
+    void insert() throws Exception {
+        Person p = new Person();
+        p.setFirstName("Christian");
+        p.setLastName("Dethloff");
+
+        jdbcGenericDao.insert(p, Optional.empty());
+
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 4)));
+        assertNotNull(person);
+    }
+
+    @Test
+    void selectMany_byEntityName() throws Exception {
+        List persons = jdbcGenericDao.selectMany(Person.class.getName(),null,null);
+        assertEquals(3, persons.size());
+    }
+
+    @Test
+    void selectMany_bySql() throws Exception {
+        List persons = jdbcGenericDao.selectMany("select * from Person", Person.class.getName(), null,null);
+        assertEquals(3, persons.size());
+    }
+
+    @Test
+    void selectOne_byEntityName() throws Exception {
+        Person person = (Person)jdbcGenericDao.selectOne(Person.class.getName(),null,List.of(new DaoPlaceholderProperty("id", 1)));
+        assertNotNull(person);
+    }
+
+    @Test
+    void selectOne_bySql() throws Exception {
+        Person person = (Person)jdbcGenericDao.selectOne("select * from Person where id = ?", Person.class.getName(), null,List.of(new DaoPlaceholderProperty("id", 1)));
+        assertNotNull(person);
     }
 }
