@@ -21,8 +21,11 @@ public class JdbcGenericDao extends AbstractJdbcGenericDao {
     @Value("${jdbcGenericDao.scanPackage}")
     private String scanPackage;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcGenericDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @PostConstruct
     public void initialize() throws Exception {
