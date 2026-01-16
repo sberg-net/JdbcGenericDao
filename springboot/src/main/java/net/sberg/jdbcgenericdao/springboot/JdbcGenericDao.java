@@ -1,8 +1,8 @@
 package net.sberg.jdbcgenericdao.springboot;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import net.sberg.jdbcgenericdao.core.AbstractJdbcGenericDao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.*;
@@ -15,12 +15,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository
+@RequiredArgsConstructor
 public class JdbcGenericDao extends AbstractJdbcGenericDao {
 
     @Value("${jdbcGenericDao.scanPackage}")
     private String scanPackage;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @PostConstruct
     public void initialize() throws Exception {
