@@ -1,4 +1,4 @@
-package net.sberg.springboot;
+package net.sberg.jdbcgenericdao.springboot;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
