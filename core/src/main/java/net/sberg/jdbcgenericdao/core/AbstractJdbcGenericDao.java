@@ -133,7 +133,7 @@ public abstract class AbstractJdbcGenericDao {
     }
 
     public void batchInsert(List<Object> entities, Optional<String> tableName) throws Exception {
-        DaoDescriptorBean daoDescriptorBean = descrMap.get(entities.get(0).getClass().getName());
+        DaoDescriptorBean daoDescriptorBean = descrMap.get(entities.getFirst().getClass().getName());
         String insert = daoDescriptorHelper.createInsertStatement(daoDescriptorBean, tableName);
 
         String idProperty = daoDescriptorBean.getDbPropertyMapping().get(daoDescriptorBean.getPrimaryKey());
@@ -230,7 +230,7 @@ public abstract class AbstractJdbcGenericDao {
 
     public Object deserializeEntity(String entityName, String[] properties, String[] values, Object[] formatters) throws Exception {
         DaoDescriptorBean daoDescriptorBean = descrMap.get(entityName);
-        Object bean = Class.forName(entityName).getDeclaredConstructor().newInstance();
+        Object bean = Class.forName(entityName, false, Thread.currentThread().getContextClassLoader()).getDeclaredConstructor().newInstance();
 
         for (int i = 0; i < properties.length; i++) {
             String property = properties[i];
@@ -353,7 +353,7 @@ public abstract class AbstractJdbcGenericDao {
                 List<String> dbProperties;
                 boolean resultIsMap = false;
                 if (daoProjectionBean == null) {
-                    result = Class.forName(daoDescriptorBean.getName()).newInstance();
+                    result = Class.forName(daoDescriptorBean.getName(), false, Thread.currentThread().getContextClassLoader()).newInstance();
                     dbProperties = daoDescriptorBean.getAllDbProperties();
                 } else {
                     if (!daoProjectionBean.isAtomar()) {
