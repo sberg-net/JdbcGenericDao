@@ -397,15 +397,19 @@ public abstract class AbstractJdbcGenericDao {
                             }
                         }
 
-                        if (value != null && daoDescriptorProperty.getTypeClass().equals(LocalDateTime.class)) {
+                        if (value != null && daoDescriptorProperty.getTypeClass().equals(LocalDateTime.class)
+                                && value.getClass().equals(Timestamp.class)) {
                             value = ((Timestamp) value).toLocalDateTime();
-                        } else if (value != null && daoDescriptorProperty.getTypeClass().equals(LocalDate.class)) {
+                        } else if (value != null && daoDescriptorProperty.getTypeClass().equals(LocalDate.class)
+                                && value.getClass().equals(Date.class)) {
                             value = ((Date) value).toLocalDate();
                         } else if (value != null && daoDescriptorProperty.getTypeClass().getSuperclass().equals(Enum.class)) {
                             value = Enum.valueOf(daoDescriptorProperty.getTypeClass(), value.toString());
-                        } else if (value != null && value.getClass().equals(Double.class) && daoDescriptorProperty.getTypeClass().equals(BigDecimal.class)) {
+                        } else if (value != null && value.getClass().equals(Double.class)
+                                && daoDescriptorProperty.getTypeClass().equals(BigDecimal.class)) {
                             value = BigDecimal.valueOf((Double) value);
-                        } else if (value != null && value.getClass().equals(Integer.class) && daoDescriptorProperty.getTypeClass().equals(BigDecimal.class)) {
+                        } else if (value != null && value.getClass().equals(Integer.class)
+                                && daoDescriptorProperty.getTypeClass().equals(BigDecimal.class)) {
                             value = BigDecimal.valueOf((Integer) value);
                         }
                     }
