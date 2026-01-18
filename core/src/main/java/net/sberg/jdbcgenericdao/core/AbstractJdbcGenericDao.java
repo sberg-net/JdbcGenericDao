@@ -35,6 +35,12 @@ public abstract class AbstractJdbcGenericDao {
         }
     }
 
+    private String getEntityName(Object entity) {
+        return entity.getClass().getName().contains("$")
+                ? entity.getClass().getSuperclass().getName()
+                : entity.getClass().getName();
+    }
+
     private void fillPreparedStatement(PreparedStatement ps, DaoDescriptorBean daoDescriptorBean, List dbProperties, Object entity, List<DaoPlaceholderProperty> placeholders) throws Exception {
         Object value;
         int sqlType;
@@ -118,7 +124,7 @@ public abstract class AbstractJdbcGenericDao {
     }
 
     public Object insert(Object entity, Optional<String> tableName) throws Exception {
-        DaoDescriptorBean daoDescriptorBean = descrMap.get(entity.getClass().getName());
+        DaoDescriptorBean daoDescriptorBean = descrMap.get(getEntityName(entity));
         String insert = daoDescriptorHelper.createInsertStatement(daoDescriptorBean, tableName);
 
         String idProperty = daoDescriptorBean.getDbPropertyMapping().get(daoDescriptorBean.getPrimaryKey());
@@ -133,7 +139,7 @@ public abstract class AbstractJdbcGenericDao {
     }
 
     public void batchInsert(List<Object> entities, Optional<String> tableName) throws Exception {
-        DaoDescriptorBean daoDescriptorBean = descrMap.get(entities.getFirst().getClass().getName());
+        DaoDescriptorBean daoDescriptorBean = descrMap.get(getEntityName(entities.getFirst()));
         String insert = daoDescriptorHelper.createInsertStatement(daoDescriptorBean, tableName);
 
         String idProperty = daoDescriptorBean.getDbPropertyMapping().get(daoDescriptorBean.getPrimaryKey());
@@ -179,7 +185,7 @@ public abstract class AbstractJdbcGenericDao {
     }
 
     public void delete(Object entity, Optional<String> tableName) throws Exception {
-        DaoDescriptorBean daoDescriptorBean = descrMap.get(entity.getClass().getName());
+        DaoDescriptorBean daoDescriptorBean = descrMap.get(getEntityName(entity));
         String idProperty = daoDescriptorBean.getDbPropertyMapping().get(daoDescriptorBean.getPrimaryKey());
         int id = (Integer) PropertyUtils.getProperty(entity, idProperty);
         delete(id, daoDescriptorBean, tableName);
@@ -210,7 +216,7 @@ public abstract class AbstractJdbcGenericDao {
     }
 
     public Object update(Object entity, Optional<String> tableName) throws Exception {
-        DaoDescriptorBean daoDescriptorBean = descrMap.get(entity.getClass().getName());
+        DaoDescriptorBean daoDescriptorBean = descrMap.get(getEntityName(entity));
         String update = daoDescriptorHelper.createUpdateStatement(daoDescriptorBean, tableName);
 
         manipulate(update, new UpdatePreparedStatementSetter(daoDescriptorBean, entity, null));
@@ -218,7 +224,7 @@ public abstract class AbstractJdbcGenericDao {
     }
 
     public void batchUpdate(List<Object> entities, Optional<String> tableName) throws Exception {
-        DaoDescriptorBean daoDescriptorBean = descrMap.get(entities.get(0).getClass().getName());
+        DaoDescriptorBean daoDescriptorBean = descrMap.get(getEntityName(entities.getFirst()));
         String update = daoDescriptorHelper.createUpdateStatement(daoDescriptorBean, tableName);
         batchManipulate(update, new UpdateBatchPreparedStatementSetter(daoDescriptorBean, entities, null));
     }
