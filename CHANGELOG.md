@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [1.4.2]
+
+### Fixed
+* cast Timestamp to LocalDateTime
+
 ## [1.4.1]
 
 ### Fixed
