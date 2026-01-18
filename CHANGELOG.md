@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [1.4.1]
+
+### Changed
+* some testing improvements
+
+### Fixed
+* class loader issue for quarkus
+
 ## [1.4.0]
 
 ### Added
