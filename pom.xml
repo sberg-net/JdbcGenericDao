@@ -2,17 +2,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <properties>
+        <revision>2.5.0</revision>
+    </properties>
+
     <groupId>net.sberg.jdbcgenericdao</groupId>
     <artifactId>JdbcGenericDao</artifactId>
     <packaging>pom</packaging>
     <name>JdbcGenericDao</name>
-
-    <version>1.5.0</version>
-
-    <properties>
-        <genericdao.groupId>net.sberg.jdbcgenericdao</genericdao.groupId>
-        <genericdao.baseVersion>${project.version}</genericdao.baseVersion>
-    </properties>
+    <version>${revision}</version>
 
     <modules>
         <module>core</module>

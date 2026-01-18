@@ -6,7 +6,7 @@
     <parent>
         <groupId>net.sberg.jdbcgenericdao</groupId>
         <artifactId>JdbcGenericDao</artifactId>
-        <version>1.5.0</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>core</artifactId>
