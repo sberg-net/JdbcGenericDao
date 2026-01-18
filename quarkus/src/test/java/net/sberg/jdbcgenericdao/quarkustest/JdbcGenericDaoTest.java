@@ -81,7 +81,12 @@ class JdbcGenericDaoTest {
 
     @Test
     void batchInsert() throws Exception {
-        List<Object> persons = new ArrayList<>() {{
+        /*
+        ToDo: this construct of create person object list is not working !!!
+        batchInsert will find the corresponding descriptorBean.
+         */
+        @SuppressWarnings("unused")
+        List<Object> persons1 = new ArrayList<>() {{
             add(new Person() {{
                 setFirstName("Christian");
                 setLastName("Dethloff");
@@ -91,6 +96,17 @@ class JdbcGenericDaoTest {
                 setLastName("Dethloff");
             }});
         }};
+
+        List<Object> persons = new ArrayList<>();
+        Person p = new Person();
+        p.setFirstName("Christian");
+        p.setLastName("Dethloff");
+        persons.add(p);
+
+        p = new Person();
+        p.setFirstName("Marlen");
+        p.setLastName("Dethloff");
+        persons.add(p);
 
         jdbcGenericDao.batchInsert(persons, Optional.empty());
 
